@@ -66,16 +66,24 @@ def display_summary_table(resolutions: list):
         )
     console.print(table)
 
-def display_git_suggestions(file_path: str):
+def display_git_suggestions(file_path: str = None):
     """Displays suggested Git commands after resolution."""
-    suggestion_text = Text.assemble(
-        ("\nSuggested Git Commands:\n", "bold cyan"),
-        (f"  git add {file_path}\n", "white"),
-        (f"  git commit -m \"Resolved merge conflicts in {file_path}\"\n", "white"),
-        ("\nAlternative (pick one side entirely):\n", "bold cyan"),
-        (f"  git checkout --ours {file_path}\n", "white"),
-        (f"  git checkout --theirs {file_path}\n", "white")
-    )
+    if file_path:
+        suggestion_text = Text.assemble(
+            ("\nSuggested Git Commands:\n", "bold cyan"),
+            (f"  git add {file_path}\n", "white"),
+            (f"  git commit -m \"Resolved merge conflicts in {file_path}\"\n", "white"),
+            ("\nAlternative (pick one side entirely):\n", "bold cyan"),
+            (f"  git checkout --ours {file_path}\n", "white"),
+            (f"  git checkout --theirs {file_path}\n", "white")
+        )
+    else:
+        suggestion_text = Text.assemble(
+            ("\nSuggested Git Commands:\n", "bold cyan"),
+            ("  git add .\n", "white"),
+            ("  git commit -m \"Resolved merge conflicts\"\n", "white")
+        )
+        
     panel = Panel(suggestion_text, title="Next Steps", border_style="cyan")
     console.print(panel)
 
@@ -86,3 +94,32 @@ def progress_indicator(current: int, total: int):
 def print_success(message: str):
     """Prints a success message in bold green."""
     console.print(f"[success]{message}[/success]")
+
+def display_file_list(files: list):
+    """Displays a numbered list of conflicted files found."""
+    text = Text()
+    for i, f in enumerate(files, 1):
+        text.append(f" [{i}] ", style="bold cyan")
+        text.append(f"{f}\n", style="white")
+    
+    panel = Panel(text, title="Conflicted Files Found", border_style="info", padding=(1, 2))
+    console.print(panel)
+
+def display_file_progress(current: int, total: int, filename: str):
+    """Displays a rich progress header for the current file being processed."""
+    console.print("\n")
+    console.rule(f"[bold yellow] Resolving file {current} of {total}: [bold white]{filename} [/bold yellow]", style="yellow")
+    console.print("\n")
+
+def display_all_mode_summary(total_files: int, total_conflicts: int, total_skipped: int):
+    """Displays a final summary table for the --all mode run."""
+    console.print("\n[bold]Batch Processing Summary[/bold]")
+    table = Table(show_header=True, header_style="bold magenta")
+    table.add_column("Category", min_width=20)
+    table.add_column("Count", justify="right")
+
+    table.add_row("Total Files Processed", str(total_files))
+    table.add_row("Total Conflicts Resolved", str(total_conflicts))
+    table.add_row("Total Files Skipped", str(total_skipped))
+    
+    console.print(table)
