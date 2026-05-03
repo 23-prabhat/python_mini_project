@@ -54,12 +54,13 @@ def analyze_conflict_with_ai(head_content: str, incoming_content: str, branch_na
     {incoming_content}
     ```
     
+    explain these following task like you are explaining to a donkey:
     Tasks:
-    1. Explain the difference between these two versions.
+    1. Explain the difference between these two versions.(keep it short and simple)
     2. Suggest which one is likely more correct or how they should be combined.
     3. Provide the final merged code block.
     
-    Keep the explanation concise and professional.
+    Keep the explanation like you are explaining to a caveman.
     """
 
     try:
