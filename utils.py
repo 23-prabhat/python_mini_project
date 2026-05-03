@@ -17,13 +17,21 @@ custom_theme = Theme({
     "combined": "blue",
 })
 
-console = Console(theme=custom_theme)
+import platform
+if platform.system() == "Windows":
+    import codecs
+    import sys
+    sys.stdout = codecs.getwriter("utf-8")(sys.stdout.buffer, "strict")
+    sys.stderr = codecs.getwriter("utf-8")(sys.stderr.buffer, "strict")
+    console = Console(theme=custom_theme, legacy_windows=False)
+else:
+    console = Console(theme=custom_theme)
 
 def print_banner():
     """Prints a styled banner for the tool."""
-    banner_text = Text("\n╔══════════════════════════════════════╗\n"
-                       "║   Git Conflict Resolver v1.0.0      ║\n"
-                       "╚══════════════════════════════════════╝", style="success")
+    banner_text = Text("\n====================================\n"
+                       "   Git Conflict Resolver v1.0.0      \n"
+                       "====================================", style="success")
     console.print(banner_text, justify="center")
 
 def print_error(message: str):

@@ -10,6 +10,6 @@ setup(
             "gcr=main:main",
         ],
     },
-    install_requires=["rich", "colorama", "groq", "google-generativeai"],
+    install_requires=["rich", "colorama", "groq"],
     python_requires=">=3.8",
 )

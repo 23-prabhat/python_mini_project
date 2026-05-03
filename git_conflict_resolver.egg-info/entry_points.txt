@@ -1,0 +1,2 @@
+[console_scripts]
+gcr = main:main

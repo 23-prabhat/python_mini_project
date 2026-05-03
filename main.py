@@ -87,7 +87,7 @@ def process_single_file(file_path, args, current_file_num=None, total_files=None
         if not current_file_num:
             display_git_suggestions(output_path)
         else:
-            print_success(f"✔ File {current_file_num} of {total_files} done")
+            print_success(f"[OK] File {current_file_num} of {total_files} done")
         return len(conflicts), True
         
     return 0, False

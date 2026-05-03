@@ -14,15 +14,7 @@ def resolve_conflict_interactive(conflict: Conflict, current: int, total: int, f
     display_code_panel(conflict.head_content, "HEAD (current)", "head", filename)
     display_code_panel(conflict.incoming_content, f"INCOMING ({conflict.branch_name})", "incoming", filename)
     
-    if ai_enabled:
-        with console.status("[bold magenta]Asking Gemini AI for insights..."):
-            analysis = analyze_conflict_with_ai(
-                conflict.head_content, 
-                conflict.incoming_content, 
-                conflict.branch_name, 
-                filename
-            )
-        display_ai_analysis(analysis)
+    # Removed automatic AI analysis from here
     
     while True:
         console.print("\nChoose resolution:")
@@ -30,10 +22,9 @@ def resolve_conflict_interactive(conflict: Conflict, current: int, total: int, f
         console.print("  [2] Keep incoming (theirs)")
         console.print("  [3] Combine both (current first)")
         console.print("  [4] Skip this conflict")
-        if not ai_enabled:
-             console.print("  [5] Ask Gemini AI for help (this once)")
+        console.print("  [5] Ask Groq AI for analysis & suggestion")
         
-        choice = input("\n→ Your choice: ").strip()
+        choice = input("\n> Your choice: ").strip()
         
         resolved_content = ""
         choice_label = ""
@@ -57,8 +48,13 @@ def resolve_conflict_interactive(conflict: Conflict, current: int, total: int, f
                 f">>>>>>> {conflict.branch_name}\n"
             )
             choice_label = "Skipped"
-        elif choice == '5' and not ai_enabled:
-            with console.status("[bold magenta]Asking Gemini AI for insights..."):
+        elif choice == '5':
+            # On-demand AI analysis: Check for key BEFORE starting the spinner
+            from ai_helper import get_groq_key
+            if not get_groq_key():
+                continue
+
+            with console.status("[bold magenta]Asking Groq AI for insights..."):
                 analysis = analyze_conflict_with_ai(
                     conflict.head_content, 
                     conflict.incoming_content, 

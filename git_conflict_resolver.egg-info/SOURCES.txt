@@ -1,0 +1,12 @@
+ai_helper.py
+main.py
+parser.py
+resolver.py
+setup.py
+utils.py
+git_conflict_resolver.egg-info/PKG-INFO
+git_conflict_resolver.egg-info/SOURCES.txt
+git_conflict_resolver.egg-info/dependency_links.txt
+git_conflict_resolver.egg-info/entry_points.txt
+git_conflict_resolver.egg-info/requires.txt
+git_conflict_resolver.egg-info/top_level.txt

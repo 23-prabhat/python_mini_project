@@ -1,5 +1,4 @@
 import os
-import google.generativeai as genai
 from groq import Groq
 from rich.console import Console
 from rich.panel import Panel
@@ -8,56 +7,39 @@ from getpass import getpass
 
 console = Console()
 
-# In-memory storage for the API keys if prompted during session
-_SESSION_KEYS = {
-    "GEMINI": None,
-    "GROQ": None
-}
+# In-memory storage for the API key if prompted during session
+_SESSION_KEY = None
 
-def get_provider_and_key():
-    """Determines which AI provider to use and ensures an API key is available."""
-    global _SESSION_KEYS
+def get_groq_key():
+    """Ensures a Groq API key is available."""
+    global _SESSION_KEY
     
-    # 1. Check for Groq environment variable
-    groq_key = os.environ.get("GROQ_API_KEY") or _SESSION_KEYS["GROQ"]
+    # 1. Check for environment variable
+    groq_key = os.environ.get("GROQ_API_KEY") or _SESSION_KEY
     if groq_key:
-        return "GROQ", groq_key
+        return groq_key
         
-    # 2. Check for Gemini environment variable
-    gemini_key = os.environ.get("GEMINI_API_KEY") or _SESSION_KEYS["GEMINI"]
-    if gemini_key:
-        return "GEMINI", gemini_key
-        
-    # 3. Prompt user to choose if neither is found
-    console.print("\n[bold yellow]No AI API key found in environment.[/bold yellow]")
-    console.print("Which AI provider would you like to use?")
-    console.print(" [1] Gemini (Google)")
-    console.print(" [2] Groq")
-    
-    choice = input("\nSelect provider [1/2]: ").strip()
-    
-    provider = "GEMINI" if choice == "1" else "GROQ" if choice == "2" else None
-    if not provider:
-        return None, None
-        
+    # 2. Prompt user if not found
+    console.print("\n[bold yellow]No Groq API key found in environment.[/bold yellow]")
     try:
-        user_key = getpass(f"Enter {provider} API Key: ").strip()
+        user_key = getpass("Enter Groq API Key: ").strip()
         if user_key:
-            _SESSION_KEYS[provider] = user_key
-            return provider, user_key
+            _SESSION_KEY = user_key
+            return user_key
     except EOFError:
         pass
         
-    return None, None
+    return None
 
-def analyze_conflict_with_ai(head_content: str, incoming_content: str, branch_name: str, filename: str):
+def analyze_conflict_with_ai(head_content: str, incoming_content: str, branch_name: str, filename: str, api_key: str = None):
     """
-    Uses the selected AI provider to analyze a Git conflict.
+    Uses the Groq API to analyze a Git conflict.
     """
-    provider, api_key = get_provider_and_key()
+    if not api_key:
+        api_key = get_groq_key()
     
-    if not provider or not api_key:
-        return "Error: No API provider selected or key missing. AI analysis cancelled."
+    if not api_key:
+        return "Error: Groq API key missing. AI analysis cancelled."
 
     prompt = f"""
     Analyze this Git merge conflict in the file '{filename}'.
@@ -81,20 +63,17 @@ def analyze_conflict_with_ai(head_content: str, incoming_content: str, branch_na
     """
 
     try:
-        if provider == "GEMINI":
-            genai.configure(api_key=api_key)
-            model = genai.GenerativeModel('gemini-1.5-flash')
-            response = model.generate_content(prompt)
-            return response.text
-        elif provider == "GROQ":
-            client = Groq(api_key=api_key)
-            completion = client.chat.completions.create(
-                model="llama-3.3-70b-versatile",
-                messages=[{"role": "user", "content": prompt}],
-            )
-            return completion.choices[0].message.content
+        client = Groq(api_key=api_key)
+        response = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[
+                {"role": "system", "content": "You are a helpful git conflict resolution assistant."},
+                {"role": "user", "content": prompt}
+            ]
+        )
+        return response.choices[0].message.content
     except Exception as e:
-        return f"Error during {provider} AI analysis: {str(e)}"
+        return f"Error during Groq AI analysis: {str(e)}"
 
 def display_ai_analysis(analysis: str):
     """Displays the AI analysis in a styled panel."""
@@ -102,6 +81,6 @@ def display_ai_analysis(analysis: str):
         console.print(f"\n[bold red]{analysis}[/bold red]")
     else:
         md = Markdown(analysis)
-        panel = Panel(md, title="AI Conflict Analysis", border_style="magenta", padding=(1, 2))
+        panel = Panel(md, title="Groq AI Conflict Analysis", border_style="magenta", padding=(1, 2))
         console.print("\n")
         console.print(panel)
