@@ -1,35 +1,40 @@
-# Setup Instructions for Git Conflict Resolver (gcr)
-
-To use the `gcr` command from anywhere in your terminal, follow these steps to add the project to your system's PATH.
-
-## Automatic Setup (Windows)
-
-1. Open **PowerShell** or **Command Prompt** as **Administrator**.
-2. Navigate to the project directory:
-   ```powershell
-   cd "C:\Users\Akhilesh\Downloads\Projects_Organised\python\git-conflict-resolver"
-   ```
-3. Run the setup script:
-   ```powershell
-   .\setup.bat
-   ```
-4. **Restart your terminal** for the changes to take effect.
-
-## Manual Setup (Windows)
-
-1. Press the **Windows Key** and type **"Environment Variables"**.
-2. Select **Edit the system environment variables**.
-3. Click the **Environment Variables** button.
-4. Under **User variables**, select **Path** and click **Edit**.
-5. Click **New** and paste the following path:
-   `C:\Users\Akhilesh\Downloads\Projects_Organised\python\git-conflict-resolver`
-6. Click **OK** on all windows.
-7. **Restart your terminal**.
-
-## Verification
-
-Open a new terminal and run:
-```powershell
-gcr --all
+# GCR Setup Guide
+**(most important two things to make project work)**
+### 1. Installation
+```bash
+# Install dependencies
+pip install -r requirements.txt
 ```
-If the application banner appears, the setup was successful.
+#### B. Global Command (PATH)
+To use the `gcr` command from any folder, add the project path to your **System PATH**:
+- **Path:** `C:\Users\YourName\...\...\...\git-conflict-resolver`
+
+**How to add it:**
+1. Search for "Edit the system environment variables" in Windows.
+2. Click **Environment Variables**.
+3. Under **User variables**, edit **Path**.
+4. Click **New** and paste the project path above.
+
+
+
+
+
+### 2. Environment Variables
+You need to set two variables for full functionality:
+also you can use your api for soecific call you want on time you are on CLI
+
+#### A. Groq API Key
+```powershell
+# Windows
+$env:GROQ_API_KEY="your_api_key_here"
+```
+
+### 3. Usage
+Now you can run the tool from anywhere using:
+```bash
+# Resolve all conflicts in current repo
+gcr --all
+
+# Resolve a specific file
+gcr path/to/file.py
+```
