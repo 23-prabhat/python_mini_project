@@ -78,10 +78,18 @@ def analyze_conflict_with_ai(head_content: str, incoming_content: str, branch_na
 
 def display_ai_analysis(analysis: str):
     """Displays the AI analysis in a styled panel."""
+    from rich import box
     if analysis.startswith("Error:"):
         console.print(f"\n[bold red]{analysis}[/bold red]")
     else:
         md = Markdown(analysis)
-        panel = Panel(md, title="Groq AI Conflict Analysis", border_style="magenta", padding=(1, 2))
+        panel = Panel(
+            md, 
+            title="[bold magenta]Groq AI Conflict Analysis[/bold magenta]", 
+            title_align="left",
+            border_style="magenta", 
+            padding=(1, 2),
+            box=box.DOUBLE_EDGE
+        )
         console.print("\n")
         console.print(panel)

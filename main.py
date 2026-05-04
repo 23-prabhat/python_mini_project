@@ -2,6 +2,7 @@ import argparse
 import sys
 import os
 import subprocess
+from rich.prompt import Confirm
 from utils import (
     print_banner, print_error, print_info, print_warning,
     console, display_summary_table, display_git_suggestions, 
@@ -77,8 +78,7 @@ def process_single_file(file_path, args, current_file_num=None, total_files=None
     output_path = args.output if args.output and not current_file_num else file_path
     
     if not args.auto:
-        confirm = input(f"\nWrite changes to {output_path}? (y/n): ").lower().strip()
-        if confirm != 'y':
+        if not Confirm.ask(f"\nWrite changes to [success]{output_path}[/success]?", default=True):
             print_info(f"Aborted resolution for {file_path}.")
             return 0, False
             
